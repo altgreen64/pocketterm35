@@ -1,3 +1,5 @@
+![PocketTerm35](assets/banner.png)
+
 # PocketTerm35 — konfiguracja i skrypty
 
 🇬🇧 [English version](README.en.md)

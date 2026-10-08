@@ -245,3 +245,9 @@ echo "</table><p class=meta>Wygenerowano narzędziem blueteam.sh · github.com/a
 col '1;36' "GOTOWE ✓"
 echo "  Raport : $HTML"
 [ -s "$UNDO" ] && echo "  Cofanie: $UNDO  (uruchom, by przywrócić poprzedni stan)"
+if [ -n "${WAYLAND_DISPLAY:-}${DISPLAY:-}" ] && command -v xdg-open >/dev/null; then
+  col '1;32' "  📄 Otwieram raport w przeglądarce…"
+  xdg-open "$HTML" >/dev/null 2>&1 &
+fi
+# NIE zamykaj terminala od razu — daj zobaczyć wynik
+if [ -t 0 ]; then echo; read -r -p "↩  Naciśnij Enter, aby zamknąć terminal…"; fi

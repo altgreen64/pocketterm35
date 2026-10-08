@@ -262,6 +262,13 @@ python3 "$HERE/report.py" "$WORK" "$TARGET" "$AUDITOR" "$IFACE" || col '1;31' "r
 HTML="$WORK/raport.html"
 if [ -f "$HTML" ]; then
   col '1;36' "GOTOWE ✓"
-  echo "  HTML: $HTML"
+  echo "  HTML:    $HTML"
   echo "  Katalog: $WORK"
+  # otwórz raport w przeglądarce (gdy jest pulpit)
+  if [ -n "${WAYLAND_DISPLAY:-}${DISPLAY:-}" ] && command -v xdg-open >/dev/null; then
+    col '1;32' "  📄 Otwieram raport w przeglądarce…"
+    xdg-open "$HTML" >/dev/null 2>&1 &
+  fi
 fi
+# NIE zamykaj terminala od razu — daj zobaczyć wynik (pomijane w trybie auto/dispatcher)
+if [ -t 0 ]; then echo; read -r -p "↩  Naciśnij Enter, aby zamknąć terminal…"; fi

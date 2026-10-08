@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Autoscan — audyt sieci/serwera
+Comment=Plug & scan: nmap/nikto/dirb/testssl. Raport HTML w ~/audyt-raporty
+Exec=lxterminal -e bash /home/pi/pocketterm35/autoscan/autoscan.sh
+Icon=security-high
+Terminal=false
+Categories=PentestScan;

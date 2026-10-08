@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Autoscan — RED TEAM 💥
+Comment=Atak/audyt ofensywny: mapowanie exploitów (searchsploit), WAF, agresywne NSE. Tylko własne sieci!
+Exec=lxterminal -e bash /home/pi/pocketterm35/autoscan/autoscan.sh --redteam
+Icon=security-low
+Terminal=false
+Categories=PentestScan;

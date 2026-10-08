@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Blue Team — utwardzanie serwera 🛡️
+Comment=Audyt + auto-łatanie dziur (firewall, SSH, aktualizacje, fail2ban) za zgodą, z backupem i undo
+Exec=lxterminal -e bash /home/pi/pocketterm35/autoscan/blueteam.sh
+Icon=security-high
+Terminal=false
+Categories=PentestScan;

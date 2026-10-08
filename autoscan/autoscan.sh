@@ -256,14 +256,6 @@ col '1;32' "Generuję raport HTML…"
 python3 "$HERE/report.py" "$WORK" "$TARGET" "$AUDITOR" "$IFACE" || col '1;31' "report.py nie zadziałał"
 HTML="$WORK/raport.html"
 if [ -f "$HTML" ]; then
-  # PDF z tego samego HTML (Chromium headless)
-  CHROME="$(command -v chromium || command -v chromium-browser || command -v google-chrome-stable)"
-  if [ -n "$CHROME" ]; then
-    "$CHROME" --headless --disable-gpu --no-sandbox --no-pdf-header-footer \
-      --password-store=basic --use-mock-keychain \
-      --print-to-pdf="$WORK/raport.pdf" "file://$HTML" >/dev/null 2>&1 && \
-      col '1;32' "PDF: $WORK/raport.pdf"
-  fi
   col '1;36' "GOTOWE ✓"
   echo "  HTML: $HTML"
   echo "  Katalog: $WORK"

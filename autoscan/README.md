@@ -1,7 +1,7 @@
 # autoscan — „plug & scan" audytor sieci/serwera 🔌🛡️
 
 Wpinasz PocketTerma kablem LAN do serwera albo switcha — a on **sam** robi rozpoznanie
-(hosty, porty, usługi, podatności, WWW, TLS) i generuje **raport HTML + PDF**. Narzędzie
+(hosty, porty, usługi, podatności, WWW, TLS) i generuje **raport HTML**. Narzędzie
 **defensywne**, dla adminów, którzy chcą sprawdzić i zabezpieczyć własny serwer.
 
 > ⚠️ **Tylko własne sieci albo audyt z pisemną zgodą.** Nieautoryzowany skan cudzej sieci jest
@@ -44,7 +44,7 @@ nano autoscan.conf
 ./autoscan.sh --aggressive    # -T4 + wszystkie porty (głębiej, wolniej)
 ./autoscan.sh --mitm          # DODATKOWO ettercap (AKTYWNE!)
 ```
-Raport ląduje w `~/audyt-raporty/audyt-<cel>-<data>/` jako **`raport.html`** i **`raport.pdf`**.
+Raport ląduje w `~/audyt-raporty/audyt-<cel>-<data>/` jako **`raport.html`**.
 
 ## Użycie — automatycznie po wpięciu kabla (rubber-ducky style)
 
@@ -57,6 +57,34 @@ sudo chown root:root /etc/NetworkManager/dispatcher.d/99-autoscan
 ```
 Od teraz: wpinasz kabel → interfejs dostaje adres → audyt rusza sam, raport czeka w
 `~/audyt-raporty/`. Log triggera: `~/audyt-raporty/dispatcher.log`.
+
+## 🛡️ Blue Team — utwardzanie serwera (`blueteam.sh`)
+
+Druga strona medalu: **obrona**. Uruchom `blueteam.sh` **na serwerze, który chcesz zabezpieczyć** —
+zrobi audyt i **za Twoją zgodą załata typowe dziury**: firewall (ufw), SSH (root login, hasła),
+zaległe aktualizacje bezpieczeństwa, fail2ban, automatyczne poprawki. Każda zmiana ma **kopię
+zapasową** i wpis w **`undo.sh`** (pełne cofanie). Raport przed/po w HTML.
+
+```bash
+./blueteam.sh            # audyt + plan + pytanie o zgodę do każdej poprawki
+./blueteam.sh --dry-run  # sam audyt i plan, NIC nie zmienia
+./blueteam.sh --auto     # załataj wszystko (po jednym potwierdzeniu TAK)
+```
+Bezpieczeństwo: firewall **najpierw przepuszcza SSH** (zero lockoutu), zmiany `sshd_config`
+są walidowane `sshd -t` przed przeładowaniem, a logowanie hasłem wyłącza się **tylko gdy masz
+już klucze SSH**. Wszystko odwracalne przez `undo.sh`.
+
+## 🧩 Wpisy w menu (PocketTerm35 / RPi OS)
+
+Gotowe launchery w [`menu/`](menu/) — skopiuj do aplikacji pulpitu:
+```bash
+sudo cp menu/autoscan.desktop menu/autoscan-redteam.desktop menu/blueteam.desktop /usr/share/applications/
+sudo update-desktop-database /usr/share/applications
+```
+Pojawią się w **Menu → Pentest → Skanowanie sieci**:
+- **Autoscan — audyt** (nieinwazyjny recon)
+- **Autoscan — RED TEAM 💥** (ofensywa: exploity/WAF/agresywne NSE)
+- **Blue Team — utwardzanie serwera 🛡️** (obrona: audyt + auto-łatanie za zgodą)
 
 ## Bezpiecznik 🔒
 - Bez `AUTHORIZED=1` (config) i bez `--yes` skrypt **pyta o potwierdzenie** („wpisz TAK").

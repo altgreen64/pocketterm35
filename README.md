@@ -24,7 +24,7 @@ Sprzęt docelowy: **Raspberry Pi 4** w obudowie PocketTerm35, system **Raspberry
 | [`pocketterm35/`](pocketterm35/) | Konfiguracja sprzętu: overlay dotyku, wpisy do `config.txt`, **mousekeys.py** (CapsLock → mysz) |
 | [`scripts/restart-klawiatury.sh`](scripts/restart-klawiatury.sh) | Reset zawieszonej klawiatury (RP2040) |
 | [`pentest/`](pentest/) | Skrypty do nauki bezpieczeństwa WiFi + narzędzie **pwnpet** |
-| [`autoscan/`](autoscan/) | **„Plug & scan"** audytor sieci/serwera — wpinasz kabel LAN, dostajesz raport HTML+PDF (nmap, nikto, dirb, testssl + tryb RED TEAM) |
+| [`autoscan/`](autoscan/) | **„Plug & scan"** audytor sieci/serwera — wpinasz kabel LAN, dostajesz raport HTML (nmap, nikto, dirb, testssl + tryb RED TEAM) |
 
 ---
 

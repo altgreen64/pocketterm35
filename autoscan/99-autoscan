@@ -1,0 +1,26 @@
+#!/bin/bash
+# NetworkManager dispatcher — "plug & scan".
+# Instalacja:
+#   sudo cp 99-autoscan /etc/NetworkManager/dispatcher.d/
+#   sudo chmod +x /etc/NetworkManager/dispatcher.d/99-autoscan
+#   sudo chown root:root /etc/NetworkManager/dispatcher.d/99-autoscan
+#
+# Uruchamia autoscan automatycznie, gdy przewodowy interfejs dostanie adres (up).
+# Działa TYLKO gdy w autoscan.conf ustawione AUTHORIZED=1 (bezpiecznik).
+
+IFACE="$1"; ACTION="$2"
+AUTOSCAN="/home/pi/pocketterm35/autoscan/autoscan.sh"   # popraw ścieżkę jeśli trzeba
+LOG="/home/pi/audyt-raporty/dispatcher.log"
+
+# tylko interfejsy przewodowe i tylko zdarzenie "up"
+case "$IFACE" in eth*|enx*|usb*) ;; *) exit 0;; esac
+[ "$ACTION" = "up" ] || exit 0
+
+[ -x "$AUTOSCAN" ] || exit 0
+mkdir -p "$(dirname "$LOG")"
+echo "$(date) wykryto $IFACE up — start autoscan" >> "$LOG"
+# NIE przekazujemy --yes: uruchomienie zależy od AUTHORIZED=1 w autoscan.conf.
+# Jeśli AUTHORIZED=0, skrypt poprosi o potwierdzenie, a że dispatcher nie ma
+# terminala — bezpiecznie się przerwie (nic nie zeskanuje bez Twojej zgody).
+sudo -u pi "$AUTOSCAN" -i "$IFACE" < /dev/null >> "$LOG" 2>&1 &
+exit 0

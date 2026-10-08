@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Autoscan — szybki audyt ⚡
+Comment=Szybki recon: top-100 portów, lekkie NSE, bez głębokich testów WWW/TLS. Raport HTML
+Exec=lxterminal -e bash /home/pi/pocketterm35/autoscan/autoscan.sh --fast
+Icon=security-medium
+Terminal=false
+Categories=PentestScan;

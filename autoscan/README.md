@@ -38,13 +38,39 @@ nano autoscan.conf
 ## Użycie — ręcznie
 
 ```bash
-./autoscan.sh                 # auto: wykryj kabel + podsieć i skanuj
+./autoscan.sh                 # auto: wykryj interfejs + podsieć i skanuj
+./autoscan.sh --fast          # SZYBKI AUDYT: top-100 portów, lekkie NSE, bez WWW/TLS
 ./autoscan.sh -t 10.0.0.5     # konkretny serwer
 ./autoscan.sh -t 10.0.0.0/24  # cała podsieć
 ./autoscan.sh --aggressive    # -T4 + wszystkie porty (głębiej, wolniej)
 ./autoscan.sh --mitm          # DODATKOWO ettercap (AKTYWNE!)
 ```
 Raport ląduje w `~/audyt-raporty/audyt-<cel>-<data>/` jako **`raport.html`**.
+
+## 📶 WiFi czy kabel LAN?
+
+**Sam skan jest tak samo skuteczny po WiFi i po kablu** — nmap i cała reszta robią dokładnie to
+samo. autoscan wykrywa aktywny interfejs z adresem IP (kabel *lub* WiFi) i skanuje jego podsieć.
+Różnica to **zasięg i pewność**, nie jakość skanu:
+
+- **📶 WiFi wystarcza**, gdy cel jest w tej samej sieci WiFi, do której jesteś podłączony.
+  Uruchamiasz z menu albo `-t <IP/CIDR>`.
+- **🔌 Kabel LAN** bierzesz, gdy:
+  - cel jest w **sieci, której WiFi nie obejmuje** (serwerownia, osobny VLAN, izolowana podsieć),
+  - chcesz tryb **„wpiąłem i samo ruszyło"** (auto-trigger niżej — tylko kabel),
+  - robisz **duży/ciężki skan** i zależy Ci na stabilności i szybkości,
+  - WiFi ma **izolację klientów** (blokuje wykrywanie hostów ARP między urządzeniami).
+
+> Krótko: cel w Twoim WiFi → WiFi starczy. Cel poza zasięgiem WiFi albo ciężki skan → kabel.
+
+## Profile skanu
+
+| Profil | Komenda | Co robi |
+|---|---|---|
+| ⚡ Szybki | `--fast` | top-100 portów, lekkie NSE, bez WWW/TLS — recon w kilkadziesiąt sekund |
+| 🔎 Zwykły | *(brak flag)* | top-1000 portów + NSE `vuln`, nikto/dirb/testssl dla WWW |
+| 💪 Głęboki | `--aggressive` | wszystkie porty (`-p-`), wolniej ale dokładniej |
+| 💥 Red team | `--redteam` | + searchsploit, WAF, agresywne NSE (`--brute` dokłada hydrę) |
 
 ## Użycie — automatycznie po wpięciu kabla (rubber-ducky style)
 
@@ -78,11 +104,12 @@ już klucze SSH**. Wszystko odwracalne przez `undo.sh`.
 
 Gotowe launchery w [`menu/`](menu/) — skopiuj do aplikacji pulpitu:
 ```bash
-sudo cp menu/autoscan.desktop menu/autoscan-redteam.desktop menu/blueteam.desktop /usr/share/applications/
+sudo cp menu/*.desktop /usr/share/applications/
 sudo update-desktop-database /usr/share/applications
 ```
 Pojawią się w **Menu → Pentest → Skanowanie sieci**:
-- **Autoscan — audyt** (nieinwazyjny recon)
+- **Autoscan — szybki audyt ⚡** (błyskawiczny recon)
+- **Autoscan — audyt** (nieinwazyjny, pełny recon)
 - **Autoscan — RED TEAM 💥** (ofensywa: exploity/WAF/agresywne NSE)
 - **Blue Team — utwardzanie serwera 🛡️** (obrona: audyt + auto-łatanie za zgodą)
 

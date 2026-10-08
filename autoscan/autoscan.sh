@@ -13,6 +13,7 @@
 #     ./autoscan.sh -t 10.0.0.0/24  # ręczny cel (CIDR lub pojedynczy host)
 #     ./autoscan.sh -i eth0         # wymuś interfejs
 #     ./autoscan.sh --aggressive    # szybszy/głębszy nmap (-T4, pełne porty)
+#     ./autoscan.sh --fast          # SZYBKI AUDYT (top-100 portów, lekkie NSE, bez WWW/TLS)
 #     ./autoscan.sh --mitm          # DODATKOWO ettercap (AKTYWNE! domyślnie OFF)
 #     ./autoscan.sh --yes           # pomiń pytanie o autoryzację (tryb auto)
 # =============================================================================
@@ -29,6 +30,7 @@ CONF="$HERE/autoscan.conf"
 : "${NMAP_TIMING:=-T3}"           # kultura skanu (T2=cicho, T4=szybko)
 : "${NMAP_PORTS:=--top-ports 1000}"
 : "${DO_MITM:=0}"
+: "${FAST:=0}"                    # 1 = szybki audyt (mniej portów, lekkie NSE, bez nikto/dirb)
 : "${DIRB_WORDLIST:=/usr/share/dirb/wordlists/common.txt}"
 # --- RED TEAM (aktywne techniki) ---
 : "${REDTEAM:=0}"                # 1 = włącz moduł red team
@@ -41,6 +43,7 @@ while [ $# -gt 0 ]; do case "$1" in
   -t|--target) TARGET="$2"; shift 2;;
   -i|--iface)  IFACE="$2"; shift 2;;
   --aggressive) NMAP_TIMING="-T4"; NMAP_PORTS="-p-"; shift;;
+  --fast|--szybki) FAST=1; NMAP_TIMING="-T4"; NMAP_PORTS="--top-ports 100"; shift;;
   --redteam) REDTEAM=1; shift;;
   --brute) REDTEAM=1; REDTEAM_BRUTE=1; shift;;
   --mitm) DO_MITM=1; shift;;
@@ -80,7 +83,7 @@ col '1;36' "╚═════════════════════�
 echo "Interfejs : $IFACE"
 echo "Cel skanu : $TARGET"
 echo "Audytor   : $AUDITOR"
-echo "Profil    : nmap $NMAP_TIMING $NMAP_PORTS | RED TEAM=$REDTEAM (brute=$REDTEAM_BRUTE) | MITM=$DO_MITM"
+echo "Profil    : nmap $NMAP_TIMING $NMAP_PORTS | FAST=$FAST | RED TEAM=$REDTEAM (brute=$REDTEAM_BRUTE) | MITM=$DO_MITM"
 hr
 
 # --- BEZPIECZNIK: autoryzacja ----------------------------------------------
@@ -91,7 +94,7 @@ if [ "$CONFIRM" != "1" ]; then
 fi
 
 # --- OFERTA / UZBROJENIE RED TEAM -------------------------------------------
-if [ "$REDTEAM" != "1" ] && [ -t 0 ]; then
+if [ "$REDTEAM" != "1" ] && [ "$FAST" != "1" ] && [ -t 0 ]; then
   col '1;31' "💥 Uruchomić także moduł RED TEAM (AKTYWNE: mapowanie exploitów, enum, WAF; brute osobno)?"
   read -r -p "   [t/N]: " rt
   case "$rt" in t|T|tak|TAK|y|Y) REDTEAM=1;; esac
@@ -125,6 +128,7 @@ echo "  Żywe hosty: $LIVE"; hr
 # 3) nmap głęboki: usługi, wersje, OS + skrypty NSE
 NSE="default,vuln"
 [ "$REDTEAM" = "1" ] && NSE="default,vuln,exploit,intrusive,auth"
+[ "$FAST" = "1" ] && NSE="default"   # szybki audyt: bez wolnych skryptów vuln
 col '1;32' "[3/5] nmap — usługi / wersje / OS / NSE ($NSE)…"
 if [ "$REDTEAM" = "1" ]; then
   col '1;33' "    ⏳ Tryb RED TEAM robi głębokie skrypty (intrusive/auth) — to potrwa"
@@ -173,7 +177,8 @@ while read -r ip port tls; do
   if [ "$tls" = "s" ] && [ -n "$TESTSSL" ]; then
     timeout 180 "$TESTSSL" --quiet --color 0 "$ip:$port" > "${base}_testssl.txt" 2>&1
   fi
-done < "$WORK/web_targets.txt"
+done < <([ "$FAST" = "1" ] || cat "$WORK/web_targets.txt")
+[ "$FAST" = "1" ] && col '1;90' "    (szybki audyt — pomijam głębokie testy WWW/TLS)"
 hr
 
 # R) RED TEAM — mapowanie exploitów / WAF / brute (tylko gdy uzbrojone)

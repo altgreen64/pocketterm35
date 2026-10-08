@@ -126,8 +126,18 @@ echo "  Żywe hosty: $LIVE"; hr
 NSE="default,vuln"
 [ "$REDTEAM" = "1" ] && NSE="default,vuln,exploit,intrusive,auth"
 col '1;32' "[3/5] nmap — usługi / wersje / OS / NSE ($NSE)…"
-$SUDO nmap "$NMAP_TIMING" $NMAP_PORTS -sV -O --script "$NSE" \
-     $LIVE -oX "$WORK/nmap.xml" -oN "$WORK/nmap.txt" | tail -40
+if [ "$REDTEAM" = "1" ]; then
+  col '1;33' "    ⏳ Tryb RED TEAM robi głębokie skrypty (intrusive/auth) — to potrwa"
+  col '1;33' "       NAWET KILKANAŚCIE MINUT. To normalne, skan NIE jest zawieszony."
+  col '1;90' "       Poniżej leci na żywo postęp i czas do końca (ETC):"
+fi
+# --stats-every = nmap sam co 15 s wypisuje % done + ETA; streamujemy postęp
+# (bez 'tail', który chował output aż do końca i wyglądał jak zwis)
+$SUDO nmap "$NMAP_TIMING" $NMAP_PORTS -sV -O --script "$NSE" --stats-every 15s \
+     $LIVE -oX "$WORK/nmap.xml" -oN "$WORK/nmap.txt" 2>&1 \
+  | stdbuf -oL grep --line-buffered -E "Stats:|% done|Discovered open|Completed .* scan|NSE Timing|Service scan Timing" \
+  | sed -u 's/^/    › /'
+echo "    ✓ nmap zakończony"
 hr
 
 # 4) usługi WWW -> nikto + dirb ; TLS -> testssl

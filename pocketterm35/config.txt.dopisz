@@ -1,0 +1,19 @@
+# === PocketTerm35 (Waveshare) - Raspberry Pi 4 ===
+[all]
+# I2C pod panel dotykowy Goodix GT911
+dtparam=i2c_arm=on
+# WLASNY overlay - panel odpowiada pod 0x5d, a nie 0x14 jak twierdzi overlay Waveshare 4b
+dtoverlay=pocketterm35-touch
+# Klawiatura RP2040 na porcie OTG w trybie host
+dtoverlay=dwc2,dr_mode=host
+
+# AWARYJNIE: jesli ekran zostanie czarny (brak EDID z panelu 3.5")
+#hdmi_force_hotplug=1
+#hdmi_group=2
+#hdmi_mode=87
+#hdmi_cvt=640 480 60 1 0 0 0
+
+# Taktowanie CPU 1500 MHz - fabryczne dla Pi4, chlodniej i dluzej na baterii.
+# Wpisane jawnie, zeby nadpisac arm_boost=1 z obrazu (ten podbija do 1800).
+# Przy 1800 MHz w zamknietej obudowie bylo 69 st.C na biegu jalowym.
+arm_freq=1500

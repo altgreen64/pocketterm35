@@ -1,0 +1,15 @@
+# Nigdy nie commituj danych z przechwytów ani sekretów
+captures/
+*.cap
+*.pcap
+*.pcapng
+*.hc22000
+*.22000
+*handshake*.cap
+hydra.restore
+hydra-result*.txt
+*.netxml
+wordlists/
+__pycache__/
+*.pyc
+.directory

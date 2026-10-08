@@ -1,0 +1,15 @@
+[Unit]
+Description=PocketTerm35 CapsLock -> mysz (mousekeys)
+After=multi-user.target
+
+[Service]
+Type=simple
+# Popraw ścieżkę, jeśli trzymasz skrypt gdzie indziej:
+ExecStart=/usr/bin/python3 /home/pi/pocketterm35/mousekeys.py
+Restart=on-failure
+RestartSec=3
+# Dostęp do /dev/input i /dev/uinput:
+User=root
+
+[Install]
+WantedBy=multi-user.target

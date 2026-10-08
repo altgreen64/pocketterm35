@@ -1,5 +1,7 @@
 # PocketTerm35 — konfiguracja i skrypty
 
+🇬🇧 [English version](README.en.md)
+
 Zestaw plików, który stawia **Waveshare PocketTerm35** (handheld na Raspberry Pi) z działającym
 ekranem dotykowym, klawiaturą i paroma wygodnymi narzędziami — plus moje skrypty pentestowe
 do nauki bezpieczeństwa WiFi.

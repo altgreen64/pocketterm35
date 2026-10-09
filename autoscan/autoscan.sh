@@ -171,7 +171,7 @@ while read -r ip port tls; do
   scheme="http"; [ "$tls" = "s" ] && scheme="https"
   base="$WORK/web_${ip}_${port}"
   echo "  → $scheme://$ip:$port"
-  command -v nikto >/dev/null && timeout 180 nikto -host "$scheme://$ip:$port" -maxtime 170 > "${base}_nikto.txt" 2>&1
+  command -v nikto >/dev/null && timeout 180 nikto -host "$scheme://$ip:$port" -maxtime 170 2>&1 | grep -vE "^[-+] STATUS:" > "${base}_nikto.txt"
   command -v dirb  >/dev/null && timeout 180 dirb "$scheme://$ip:$port/" "$DIRB_WORDLIST" -S -w > "${base}_dirb.txt" 2>&1
   TESTSSL="$(command -v testssl || command -v testssl.sh)"
   if [ "$tls" = "s" ] && [ -n "$TESTSSL" ]; then
@@ -198,9 +198,15 @@ PY
     : > "$WORK/searchsploit.txt"
     while IFS= read -r line; do
       [ -z "$line" ] && continue
-      echo "### $line" >> "$WORK/searchsploit.txt"
-      "$SS" --color=never "$line" 2>/dev/null \
-        | grep -viE "No Results|---------|Exploit Title" >> "$WORK/searchsploit.txt"
+      # oczyść zapytanie: usuń sufiksy demonów + wszystko od Debian/Ubuntu,
+      # a wersję przytnij do major.minor (pełne wersje typu 2.4.68 nie trafiają w bazę)
+      q="$(printf '%s' "$line" | sed -E 's/\b(httpd|smbd|for_Windows)\b//Ig; s/ (Debian|Ubuntu|Unix).*//I; s/([0-9]+\.[0-9]+)\.[0-9A-Za-z+~._-]+/\1/; s/  */ /g; s/^ *//; s/ *$//')"
+      [ -z "$q" ] && q="$line"
+      echo "### $line   (zapytanie: $q)" >> "$WORK/searchsploit.txt"
+      # UWAGA: searchsploit v4.2.x NIE lubi --color=never (wywala się) — bez flag + strip ANSI
+      res="$("$SS" $q 2>/dev/null | sed 's/\x1b\[[0-9;]*[A-Za-z]//g' | grep -E '\| ' | grep -viE 'Exploit Title')"
+      if [ -n "$res" ]; then echo "$res" >> "$WORK/searchsploit.txt"
+      else echo "  — brak znanych exploitów w Exploit-DB dla tej wersji —" >> "$WORK/searchsploit.txt"; fi
       echo >> "$WORK/searchsploit.txt"
     done < "$WORK/_products.txt"
     echo "  searchsploit: sprawdzono $(grep -c '^###' "$WORK/searchsploit.txt" 2>/dev/null) usług"

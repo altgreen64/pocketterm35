@@ -73,7 +73,8 @@ Różnica to **zasięg i pewność**, nie jakość skanu:
 | ⚡ Szybki | `--fast` | top-100 portów, lekkie NSE, bez WWW/TLS — recon w kilkadziesiąt sekund |
 | 🔎 Zwykły | *(brak flag)* | top-1000 portów + NSE `vuln`, nikto/dirb/testssl dla WWW |
 | 💪 Głęboki | `--aggressive` | wszystkie porty (`-p-`), wolniej ale dokładniej |
-| 💥 Red team | `--redteam` | + searchsploit, WAF, agresywne NSE (`--brute` dokłada hydrę) |
+| 💥⚡ Red team szybki | `--redteam-fast` | searchsploit + WAF + NSE `vuln,exploit` — bez wolnego brute (kilka min/host) |
+| 💥 Red team pełny | `--redteam` | + agresywne NSE `intrusive,auth` (`--brute` dokłada hydrę) — wolne, ale maksimum |
 
 ## Użycie — automatycznie po wpięciu kabla (rubber-ducky style)
 
@@ -113,7 +114,8 @@ sudo update-desktop-database /usr/share/applications
 Pojawią się w **Menu → Pentest → Skanowanie sieci**:
 - **Autoscan — szybki audyt ⚡** (błyskawiczny recon)
 - **Autoscan — audyt** (nieinwazyjny, pełny recon)
-- **Autoscan — RED TEAM 💥** (ofensywa: exploity/WAF/agresywne NSE)
+- **Autoscan — RED TEAM szybki 💥⚡** (ofensywa bez brute — szybka)
+- **Autoscan — RED TEAM 💥** (pełna „strzelba": + intrusive/auth/brute)
 - **Blue Team — utwardzanie serwera 🛡️** (obrona: audyt + auto-łatanie za zgodą)
 
 ## Bezpiecznik 🔒

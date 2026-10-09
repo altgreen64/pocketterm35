@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Autoscan — RED TEAM szybki 💥⚡
+Comment=Red team bez brute: searchsploit (exploity) + WAF + skrypty vuln/exploit, bez wolnych intrusive/auth. Tylko własne sieci!
+Exec=lxterminal -e bash /home/pi/pocketterm35/autoscan/autoscan.sh --redteam-fast
+Icon=security-low
+Terminal=false
+Categories=PentestScan;

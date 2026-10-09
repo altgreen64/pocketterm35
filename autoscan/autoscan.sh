@@ -14,6 +14,7 @@
 #     ./autoscan.sh -i eth0         # wymuś interfejs
 #     ./autoscan.sh --aggressive    # szybszy/głębszy nmap (-T4, pełne porty)
 #     ./autoscan.sh --fast          # SZYBKI AUDYT (top-100 portów, lekkie NSE, bez WWW/TLS)
+#     ./autoscan.sh --redteam-fast  # RED TEAM bez brute (searchsploit+WAF+vuln/exploit, szybki)
 #     ./autoscan.sh --mitm          # DODATKOWO ettercap (AKTYWNE! domyślnie OFF)
 #     ./autoscan.sh --yes           # pomiń pytanie o autoryzację (tryb auto)
 # =============================================================================
@@ -34,6 +35,7 @@ CONF="$HERE/autoscan.conf"
 : "${DIRB_WORDLIST:=/usr/share/dirb/wordlists/common.txt}"
 # --- RED TEAM (aktywne techniki) ---
 : "${REDTEAM:=0}"                # 1 = włącz moduł red team
+: "${REDTEAM_NOBRUTE:=0}"        # 1 = red team bez wolnych NSE intrusive/auth (szybki)
 : "${REDTEAM_BRUTE:=0}"          # 1 = hydra brute poświadczeń (ryzyko blokady kont!)
 : "${HYDRA_USERS:=admin,root,user}"
 : "${HYDRA_PASS:=admin,password,root,123456,toor,raspberry,qwerty}"
@@ -45,6 +47,7 @@ while [ $# -gt 0 ]; do case "$1" in
   --aggressive) NMAP_TIMING="-T4"; NMAP_PORTS="-p-"; shift;;
   --fast|--szybki) FAST=1; NMAP_TIMING="-T4"; NMAP_PORTS="--top-ports 100"; shift;;
   --redteam) REDTEAM=1; shift;;
+  --redteam-fast|--redteam-nobrute) REDTEAM=1; REDTEAM_NOBRUTE=1; shift;;
   --brute) REDTEAM=1; REDTEAM_BRUTE=1; shift;;
   --mitm) DO_MITM=1; shift;;
   --yes|-y) CONFIRM=1; shift;;
@@ -128,6 +131,7 @@ echo "  Żywe hosty: $LIVE"; hr
 # 3) nmap głęboki: usługi, wersje, OS + skrypty NSE
 NSE="default,vuln"
 [ "$REDTEAM" = "1" ] && NSE="default,vuln,exploit,intrusive,auth"
+[ "$REDTEAM_NOBRUTE" = "1" ] && NSE="default,vuln,exploit"   # red team bez brute (bez intrusive/auth)
 [ "$FAST" = "1" ] && NSE="default"   # szybki audyt: bez wolnych skryptów vuln
 col '1;32' "[3/5] nmap — usługi / wersje / OS / NSE ($NSE)…"
 if [ "$REDTEAM" = "1" ]; then

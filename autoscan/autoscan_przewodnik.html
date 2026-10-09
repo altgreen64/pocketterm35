@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 13mm 13mm 15mm 13mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family:"DejaVu Sans","Liberation Sans",Arial,sans-serif; color:#1a1d21; font-size:10.8pt; line-height:1.5; margin:0; }
+  h1,h2,h3 { font-family:"DejaVu Sans",Arial,sans-serif; color:#0f1115; line-height:1.2; }
+  h1 { font-size:27pt; margin:0 0 3pt; letter-spacing:-0.5px; }
+  h2 { font-size:15pt; margin:20pt 0 8pt; padding-bottom:5pt; border-bottom:3px solid #3ddc84; }
+  h3 { font-size:12pt; margin:0 0 3pt; }
+  p { margin:0 0 6pt; }
+  .lead { font-size:12pt; color:#44474d; }
+  .mono { font-family:"DejaVu Sans Mono","Liberation Mono",monospace; }
+  .section { page-break-before: always; }
+  code { background:#eef1f4; padding:1px 5px; border-radius:4px; font-family:"DejaVu Sans Mono",monospace; font-size:9.6pt; }
+
+  /* cover */
+  .cover { text-align:center; padding-top:10mm; }
+  .cover .kick { color:#3ddc84; font-weight:700; letter-spacing:3px; text-transform:uppercase; font-size:10.5pt; }
+  .cover .sub { color:#44474d; font-size:12.5pt; max-width:150mm; margin:2mm auto 0; }
+  .cover .bignum { margin:12mm auto 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; max-width:170mm; }
+  .pill { background:#11141a; color:#fff; border-radius:8px; padding:9px 14px; font-size:10pt; font-weight:600; }
+  .pill b { color:#3ddc84; }
+
+  /* scan cards */
+  .card { border:1px solid #e2e4e8; border-radius:10px; padding:13px 15px; margin:9pt 0; page-break-inside:avoid; }
+  .card .top { display:flex; align-items:baseline; gap:8px; }
+  .card .ico { font-size:16pt; }
+  .card .cmd { color:#b8370f; font-weight:700; }
+  .card .when { color:#157a47; font-size:9.6pt; font-weight:700; }
+  .card table { width:100%; border-collapse:collapse; margin:7pt 0 0; }
+  .card td { padding:4px 8px; vertical-align:top; border-bottom:1px solid #eef0f2; font-size:10pt; }
+  .card td:first-child { color:#44474d; width:28%; font-weight:600; }
+  .tools { display:flex; flex-wrap:wrap; gap:5px; margin-top:3px; }
+  .tool { background:#eaf7f0; color:#157a47; border:1px solid #bfe6d2; border-radius:5px; padding:2px 8px; font-size:9pt; font-weight:600; }
+  .tool.off { background:#fdeeea; color:#b8370f; border-color:#f2c9bd; }
+
+  /* phases */
+  .phase { display:flex; gap:10px; margin:6pt 0; align-items:flex-start; }
+  .phase .n { background:#3ddc84; color:#07130d; font-weight:800; border-radius:50%; min-width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:10pt; }
+  .phase .t b { color:#0f1115; }
+
+  /* glossary */
+  table.gloss { width:100%; border-collapse:collapse; }
+  table.gloss td,table.gloss th { border-bottom:1px solid #ececec; padding:6px 8px; text-align:left; vertical-align:top; font-size:10pt; }
+  table.gloss th { color:#44474d; font-size:9pt; text-transform:uppercase; }
+  table.gloss td:first-child { font-weight:700; width:24%; color:#0f1115; }
+
+  .note { border-left:4px solid #e8491d; background:#fff4f0; padding:8px 12px; margin:10pt 0; border-radius:0 6px 6px 0; font-size:10pt; }
+  .note b { color:#b8370f; }
+  .foot { margin-top:12pt; padding-top:8pt; border-top:1px solid #e2e4e8; color:#8a8f96; font-size:9pt; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="kick">PocketTerm35 · narzędzie dla adminów</div>
+  <h1>autoscan — przewodnik po skanach</h1>
+  <p class="sub">Co robi każdy skan i jakich narzędzi używa. Od błyskawicznego recon,
+  przez pełny audyt i red team, po utwardzanie serwera (blue team).</p>
+  <div class="bignum">
+    <div class="pill">⚡ <b>Szybki</b></div>
+    <div class="pill">🔎 <b>Zwykły</b></div>
+    <div class="pill">💪 <b>Głęboki</b></div>
+    <div class="pill">💥 <b>Red Team</b></div>
+    <div class="pill">🛡️ <b>Blue Team</b></div>
+  </div>
+  <p class="sub" style="margin-top:12mm; font-size:10.5pt;">Raporty zapisują się w <code>~/audyt-raporty/</code> jako <b>HTML</b>.<br>
+  Repo: github.com/altgreen64/pocketterm35</p>
+
+  <div class="note" style="max-width:165mm; margin:14mm auto 0; text-align:left;">
+    ⚠️ <b>Tylko własne sieci albo audyt z pisemną zgodą.</b> Nieautoryzowany skan cudzej sieci
+    jest nielegalny. Narzędzie służy do nauki bezpieczeństwa i obrony własnej infrastruktury.
+  </div>
+</div>
+
+<!-- JAK DZIAŁA SKAN -->
+<div class="section">
+  <h2>Jak działa skan — 5 faz</h2>
+  <p class="lead">Każdy skan (poza blue team) przechodzi przez te same fazy. Profile różnią się tylko
+  głębokością i tym, co dokładają.</p>
+
+  <div class="phase"><div class="n">1</div><div class="t"><b>Rozpoznanie ARP</b> — <span class="mono">netdiscover</span><br>
+    Kto żyje w segmencie sieci (adresy MAC/IP sąsiadów na warstwie łącza).</div></div>
+  <div class="phase"><div class="n">2</div><div class="t"><b>Wykrycie żywych hostów</b> — <span class="mono">nmap -sn</span><br>
+    Ping sweep po całej podsieci — potwierdza, które adresy odpowiadają.</div></div>
+  <div class="phase"><div class="n">3</div><div class="t"><b>Usługi, wersje, system, podatności</b> — <span class="mono">nmap -sV -O --script vuln</span><br>
+    Otwarte porty, nazwy i wersje usług, zgadywanie systemu operacyjnego oraz skrypty NSE
+    wykrywające znane podatności (lekki odpowiednik skanera podatności).</div></div>
+  <div class="phase"><div class="n">4</div><div class="t"><b>Serwery WWW i TLS</b> — <span class="mono">nikto · dirb · testssl</span><br>
+    Dla wykrytych usług webowych: znane luki serwera (nikto), ukryte katalogi (dirb),
+    audyt certyfikatu i szyfrów TLS (testssl).</div></div>
+  <div class="phase"><div class="n">5</div><div class="t"><b>Dodatki red team / MITM</b> — <span class="mono">searchsploit · wafw00f · hydra · ettercap</span><br>
+    Uruchamiane tylko na żądanie (patrz profil Red Team).</div></div>
+
+  <div class="note">Raport zbiera wszystko w jeden plik <b>HTML</b> (kafelki podsumowania, tabela hostów,
+  znaleziska, sekcja red team) i otwiera go automatycznie w przeglądarce. Surowe dane
+  (<code>nmap.xml</code>, <code>nmap.txt</code>, logi narzędzi) leżą obok w katalogu skanu.</div>
+</div>
+
+<!-- PROFILE SKANU -->
+<div class="section">
+  <h2>Profile skanu</h2>
+
+  <div class="card">
+    <div class="top"><span class="ico">⚡</span><h3>Szybki audyt</h3><span class="cmd mono">--fast</span></div>
+    <div class="when">KIEDY: błyskawiczny przegląd „co tu w ogóle jest", w kilkadziesiąt sekund.</div>
+    <table>
+      <tr><td>Co robi</td><td>Skan 100 najpopularniejszych portów (szybkie tempo <code>-T4</code>), lekkie skrypty NSE. Pomija głębokie testy WWW/TLS.</td></tr>
+      <tr><td>Czas</td><td>~20 sekund na host</td></tr>
+      <tr><td>Narzędzia</td><td><div class="tools"><span class="tool">netdiscover</span><span class="tool">nmap</span></div></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="top"><span class="ico">🔎</span><h3>Zwykły audyt</h3><span class="cmd mono">(bez flag)</span></div>
+    <div class="when">KIEDY: standardowy, pełny audyt sieci/serwera.</div>
+    <table>
+      <tr><td>Co robi</td><td>Top-1000 portów + skrypty <code>vuln</code> (znane podatności) + pełne testy wykrytych serwerów WWW i TLS.</td></tr>
+      <tr><td>Czas</td><td>od kilkudziesięciu sekund do kilku minut (zależnie od liczby hostów/usług)</td></tr>
+      <tr><td>Narzędzia</td><td><div class="tools"><span class="tool">netdiscover</span><span class="tool">nmap</span><span class="tool">nikto</span><span class="tool">dirb</span><span class="tool">testssl</span></div></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="top"><span class="ico">💪</span><h3>Głęboki audyt</h3><span class="cmd mono">--aggressive</span></div>
+    <div class="when">KIEDY: chcesz nie przegapić nic — także usług na nietypowych portach.</div>
+    <table>
+      <tr><td>Co robi</td><td>To samo co zwykły, ale skanuje <b>wszystkie 65535 porty</b> (<code>-p-</code>). Dokładniej, ale wolniej.</td></tr>
+      <tr><td>Czas</td><td>kilka–kilkanaście minut na host</td></tr>
+      <tr><td>Narzędzia</td><td><div class="tools"><span class="tool">netdiscover</span><span class="tool">nmap</span><span class="tool">nikto</span><span class="tool">dirb</span><span class="tool">testssl</span></div></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="top"><span class="ico">💥</span><h3>Red Team (ofensywa)</h3><span class="cmd mono">--redteam</span></div>
+    <div class="when">KIEDY: „strzelba nabita" — sprawdzasz, jak daleko dałoby się zajść. Tylko własne systemy!</div>
+    <table>
+      <tr><td>Co robi</td><td>Zwykły audyt + <b>mapowanie exploitów</b> (dopasowuje wersje usług do znanych exploitów), wykrycie WAF i agresywne skrypty NSE (<code>exploit,intrusive,auth</code>). Nie detonuje exploitów — <b>udowadnia i wskazuje</b>, co jest podatne.</td></tr>
+      <tr><td>Opcje</td><td><code>--brute</code> → hydra (audyt słabych haseł SSH/FTP — może blokować konta!) · <code>--mitm</code> → ettercap (atak MITM/ARP)</td></tr>
+      <tr><td>Czas</td><td>długo (nawet kilkanaście minut — <code>intrusive</code> jest wolne; pasek postępu pokazuje ETA)</td></tr>
+      <tr><td>Narzędzia</td><td><div class="tools"><span class="tool">nmap</span><span class="tool">searchsploit</span><span class="tool">wafw00f</span><span class="tool off">hydra (opcja)</span><span class="tool off">ettercap (opcja)</span></div></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="top"><span class="ico">🛡️</span><h3>Blue Team (obrona)</h3><span class="cmd mono">blueteam.sh</span></div>
+    <div class="when">KIEDY: chcesz nie tylko znaleźć dziury, ale je ZAŁATAĆ. Uruchamiasz na serwerze do zabezpieczenia.</div>
+    <table>
+      <tr><td>Co robi</td><td>Audyt konfiguracji i <b>za Twoją zgodą łata dziury</b>: zaległe aktualizacje bezpieczeństwa, firewall, utwardzenie SSH, ochrona przed brute-force, automatyczne poprawki.</td></tr>
+      <tr><td>Bezpieczeństwo</td><td>Firewall <b>najpierw przepuszcza SSH</b> (zero odcięcia), zmiany SSH walidowane przed restartem, hasła wyłącza tylko gdy masz klucze. <b>Kopia zapasowa + <code>undo.sh</code></b> = pełne cofnięcie.</td></tr>
+      <tr><td>Tryby</td><td><code>--dry-run</code> (tylko plan) · interaktywny (zgoda do każdej poprawki) · <code>--auto</code> (wszystko po jednym TAK)</td></tr>
+      <tr><td>Narzędzia</td><td><div class="tools"><span class="tool">apt</span><span class="tool">ufw</span><span class="tool">fail2ban</span><span class="tool">unattended-upgrades</span><span class="tool">openssh</span></div></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- SŁOWNIK NARZĘDZI -->
+<div class="section">
+  <h2>Słownik narzędzi</h2>
+  <p class="lead">Krótko, co robi każde narzędzie użyte w skanach.</p>
+  <table class="gloss">
+    <tr><th>Narzędzie</th><th>Do czego służy</th></tr>
+    <tr><td>netdiscover</td><td>Rozpoznanie sieci przez zapytania ARP — wykrywa aktywne hosty i ich adresy MAC/producenta.</td></tr>
+    <tr><td>nmap</td><td>Rdzeń skanowania: wykrywa hosty, otwarte porty, wersje usług, system operacyjny; przez skrypty NSE także podatności.</td></tr>
+    <tr><td>nikto</td><td>Skaner serwerów WWW — szuka znanych luk, przestarzałego oprogramowania i niebezpiecznych plików/konfiguracji.</td></tr>
+    <tr><td>dirb</td><td>Wyszukiwanie ukrytych katalogów i plików na serwerze WWW metodą słownikową (np. <code>/admin</code>, <code>/backup</code>).</td></tr>
+    <tr><td>testssl</td><td>Audyt TLS/SSL serwera — wersje protokołu, siła szyfrów, ważność certyfikatu, znane słabości (np. stare TLS).</td></tr>
+    <tr><td>searchsploit</td><td>Lokalna baza exploitów (Exploit-DB) — dopasowuje wykryte wersje usług do znanych, publicznych exploitów i CVE.</td></tr>
+    <tr><td>wafw00f</td><td>Wykrywa, czy serwer WWW stoi za firewallem aplikacyjnym (WAF) i jakiego rodzaju.</td></tr>
+    <tr><td>hydra</td><td>Audyt siły haseł — próbuje zalogować się listą kont/haseł (SSH, FTP…). Wykrywa słabe poświadczenia. <b>Może blokować konta.</b></td></tr>
+    <tr><td>ettercap</td><td>Narzędzie MITM (man-in-the-middle) / podsłuch ARP. Technika aktywna, domyślnie wyłączona.</td></tr>
+    <tr><td>ufw</td><td>Prosty firewall (zapora) — reguluje, które porty są dostępne z sieci. Blue team włącza go i domyślnie blokuje wejścia.</td></tr>
+    <tr><td>fail2ban</td><td>Blokuje adresy IP po serii nieudanych logowań — ochrona przed atakami brute-force na SSH.</td></tr>
+    <tr><td>unattended-upgrades</td><td>Automatyczne instalowanie poprawek bezpieczeństwa systemu, bez ręcznej ingerencji.</td></tr>
+  </table>
+
+  <div class="note">Uwaga sprzętowa: <b>OpenVAS świadomie pominięty</b> — na Raspberry Pi 4 z 2 GB RAM jest
+  niepraktyczny (baza podatności chce ~4 GB). Jego rolę przejmują skrypty <code>vuln</code> nmapa +
+  nikto + testssl + searchsploit, które na tym sprzęcie działają sprawnie.</div>
+
+  <div class="foot">autoscan · PocketTerm35 · materiał edukacyjny · github.com/altgreen64/pocketterm35</div>
+</div>
+
+</body>
+</html>

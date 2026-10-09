@@ -7,6 +7,9 @@ Wpinasz PocketTerma kablem LAN do serwera albo switcha — a on **sam** robi roz
 > ⚠️ **Tylko własne sieci albo audyt z pisemną zgodą.** Nieautoryzowany skan cudzej sieci jest
 > nielegalny. Masz tu bezpiecznik (patrz niżej) — używaj go.
 
+📄 **[Przewodnik po skanach (PDF)](autoscan_przewodnik.pdf)** — co robi każdy skan i jakich narzędzi
+używa (ściąga + materiał do nauki). Źródło: [`autoscan_przewodnik.html`](autoscan_przewodnik.html).
+
 ## Co robi (fazy)
 
 | Faza | Narzędzie | Po co |
